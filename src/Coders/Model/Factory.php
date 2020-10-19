@@ -94,9 +94,9 @@ class Factory
      *
      * @return $this
      */
-    public function on($connection = null)
+    public function on($connection = null, $schema = null)
     {
-        $this->schemas = new SchemaManager($this->db->connection($connection));
+        $this->schemas = new SchemaManager($this->db->connection($connection), $schema);
 
         return $this;
     }
@@ -447,7 +447,8 @@ class Factory
         }
 
         if ($model->hasFillable() && $model->doesNotUseBaseFiles()) {
-            $body .= $this->class->field('fillable', $model->getFillable(), ['before' => "\n"]);
+            $body .= $this->class->constant('FILLABLE', $model->getFillable(), ['before' => "\n"]);
+            $body .= $this->class->field('fillable', 'self::FILLABLE', ['before' => "\n"]);
         }
 
         if ($model->hasHints() && $model->usesHints()) {
@@ -556,7 +557,8 @@ class Factory
         }
 
         if ($model->hasFillable()) {
-            $body .= $this->class->field('fillable', $model->getFillable(), ['before' => "\n"]);
+            $body .= $this->class->constant('FILLABLE', $model->getFillable(), ['before' => "\n"]);
+            $body .= $this->class->field('fillable', 'self::FILLABLE', ['before' => "\n"]);
         }
 
         // Make sure there is not an undesired line break at the end of the class body
